@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 astrie = "0.2.0"
 bitfield-struct = "0.11.0"
+rand = { version = "0.9.1", default-features = false } # traits like Rng, distributions
