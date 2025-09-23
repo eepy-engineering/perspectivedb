@@ -27,9 +27,9 @@ pub trait Table {
 
     fn log(&self) -> &Self::Log;
 
-    fn query(
-        &self,
-    ) -> Query<impl DerefMut<Target = [u8]>, impl DerefMut<Target = [Option<Node<FilterNode>>]>>;
+    // fn query(
+    //     &self,
+    // ) -> Query<impl DerefMut<Target = [u8]>, impl DerefMut<Target = [Option<Node<FilterNode>>]>>;
 }
 
 pub trait Log {
