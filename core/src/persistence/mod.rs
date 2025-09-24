@@ -3,7 +3,7 @@ use core::ops::DerefMut;
 use crate::{
     config::DatabaseConfig,
     log::identifier::EntryId,
-    query::{Query, filter::FilterNode},
+    query::{Query, QueryAny, filter::FilterNode},
     util::tree::Node,
 };
 
@@ -19,18 +19,24 @@ pub trait Persistence {
     type Table: Table;
 
     fn config(&self) -> &DatabaseConfig;
-    fn table(&self, table: &str) -> Option<&Self::Table>;
+    fn table(&self, table: &str) -> Option<Self::Table>;
 }
 
 pub trait Table {
     type Log: Log;
+    type ResultCache: ResultCache;
 
     fn log(&self) -> &Self::Log;
 
-    // fn query(
-    //     &self,
-    // ) -> Query<impl DerefMut<Target = [u8]>, impl DerefMut<Target = [Option<Node<FilterNode>>]>>;
+    fn query<KeyA: DerefMut<Target = [u8]>, TreeA: DerefMut<Target = [Option<Node<FilterNode>>]>>(
+        &self,
+        query: Query<KeyA, TreeA>,
+    ) -> Option<Self::ResultCache>;
+
+    fn queries<'a>(&'a self) -> impl Iterator<Item = QueryAny<'a>>;
 }
+
+pub trait ResultCache {}
 
 pub trait Log {
     type Error;

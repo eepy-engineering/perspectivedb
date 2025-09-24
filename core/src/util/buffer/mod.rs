@@ -31,7 +31,12 @@ impl<A: DerefMut<Target = [u8]> + Growable> Buffer<A> {
 impl<A: DerefMut<Target = [u8]>> Buffer<A> {
     pub fn push(&mut self, data: &[u8]) -> Result<(), ()> {
         if self.arena.len() - self.head < data.len() + 4 {
-            return Err(());
+            let Some(arena_grow) = self.arena_grow else {
+                return Err(());
+            };
+
+            let current_len = self.arena.len();
+            arena_grow(&mut self.arena, current_len * 2);
         };
 
         for (idx, v) in data.len().to_ne_bytes().iter().enumerate() {

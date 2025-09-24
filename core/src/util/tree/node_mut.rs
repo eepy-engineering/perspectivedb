@@ -10,10 +10,6 @@ pub struct NodeMutRef<'a, T, A: DerefMut<Target = [Option<Node<T>>]>> {
     pub(super) arena: &'a mut ArenaTree<T, A>,
 }
 
-pub struct ChildrenMutIterator<'a, T, A: DerefMut<Target = [Option<Node<T>>]>> {
-    reference: Option<NodeMutRef<'a, T, A>>,
-}
-
 impl<'a, T, A: DerefMut<Target = [Option<Node<T>>]>> NodeMutRef<'a, T, A> {
     pub fn children(&'a self) -> ChildrenIterator<'a, T, A> {
         let node = self
@@ -33,24 +29,6 @@ impl<'a, T, A: DerefMut<Target = [Option<Node<T>>]>> NodeMutRef<'a, T, A> {
         return ChildrenIterator {
             reference: Some(NodeRef {
                 value: node,
-                arena: self.arena,
-            }),
-        };
-    }
-
-    pub fn children_mut(&'a mut self) -> ChildrenMutIterator<'a, T, A> {
-        let node = self
-            .arena
-            .resolve(self.value)
-            .expect("Pointer dereference failed in tree. Dangling?");
-
-        let Some(v) = node.first_child else {
-            return ChildrenMutIterator { reference: None };
-        };
-
-        return ChildrenMutIterator {
-            reference: Some(NodeMutRef {
-                value: v,
                 arena: self.arena,
             }),
         };
